@@ -54,20 +54,50 @@ body {
   color: #ffffff;
 }
 
-.reel-ticker {
-  overflow: hidden;
-  white-space: nowrap;
+.year-stepper[hidden] { display: none; }
+
+.year-stepper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
   border-top: 1px solid rgba(255,255,255,0.25);
   border-bottom: 1px solid rgba(255,255,255,0.25);
-  padding: 0.6rem 0;
+  padding: 0.85rem 0;
 }
 
-.reel-ticker span {
+.stepper-year {
   font-family: 'Space Grotesk', sans-serif;
-  font-weight: 600;
-  font-size: 0.8rem;
-  letter-spacing: 0.12em;
-  color: rgba(255,255,255,0.65);
+  font-weight: 700;
+  font-size: 1.3rem;
+  color: #fff;
+  min-width: 4.5ch;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.stepper-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.5);
+  background: transparent;
+  color: #fff;
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease, opacity 0.15s ease;
+}
+
+.stepper-btn:hover { background: rgba(255,255,255,0.15); }
+
+.stepper-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+  background: none;
 }
 
 .kicker {
@@ -414,7 +444,44 @@ main {
   gap: 0.35rem;
 }
 
-.chapter-list li, .clip-list li { display: contents; }
+.chapter-list li, .clip-list li:not(.clip-year-header) { display: contents; }
+
+.clip-year-header {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--bg);
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+  color: var(--ink-soft);
+  padding: 0.9rem 0.15rem 0.35rem;
+  border-bottom: 2px solid var(--ink);
+  margin-bottom: 0.15rem;
+}
+
+.year-jump-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+
+.jump-chip {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.jump-chip:hover { border-color: var(--ink); color: var(--ink); }
 
 .clip-row {
   display: flex;

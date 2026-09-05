@@ -270,6 +270,7 @@ function updateDialVisualState() {
 function selectYear(year) {
   if (year === lastSelectedYear) return;
   lastSelectedYear = year;
+  updateYearStepper(year);
 
   const entry = dialYears.find(e => e.year === year);
   const container = document.getElementById('video-sublist');
@@ -297,11 +298,35 @@ function selectYear(year) {
   }
 }
 
+function updateYearStepper(year) {
+  const idx = dialYears.findIndex(e => e.year === year);
+  document.getElementById('year-stepper-label').textContent = year;
+  document.getElementById('year-prev').disabled = idx <= 0;
+  document.getElementById('year-next').disabled = idx === -1 || idx >= dialYears.length - 1;
+}
+
+function stepYear(delta) {
+  if (lastSelectedYear === null) return;
+  const idx = dialYears.findIndex(e => e.year === lastSelectedYear);
+  const target = dialYears[idx + delta];
+  if (!target) return;
+  const btn = document.querySelector(`.year-dial-item[data-year="${target.year}"]`);
+  if (btn) btn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  selectYear(target.year);
+}
+
+function initYearStepper() {
+  document.getElementById('year-prev').addEventListener('click', () => stepYear(-1));
+  document.getElementById('year-next').addEventListener('click', () => stepYear(1));
+}
+
 function renderPeoplePanel() {
   const peopleContainer = document.getElementById('people-list');
   const clipList = document.getElementById('person-clip-list');
+  const jumpRow = document.getElementById('year-jump-row');
   peopleContainer.innerHTML = '';
   clipList.innerHTML = '';
+  jumpRow.innerHTML = '';
 
   const people = allPeople();
 
@@ -309,6 +334,7 @@ function renderPeoplePanel() {
     [...peopleContainer.children].forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     clipList.innerHTML = '';
+    jumpRow.innerHTML = '';
 
     const rows = [];
     VIDEOS.forEach(video => {
@@ -323,13 +349,32 @@ function renderPeoplePanel() {
       return;
     }
 
+    let lastYear = null;
     rows.forEach(({ video, clip }) => {
+      if (video.year !== lastYear) {
+        lastYear = video.year;
+
+        const jumpBtn = document.createElement('button');
+        jumpBtn.className = 'jump-chip';
+        jumpBtn.textContent = video.year;
+        jumpBtn.addEventListener('click', () => {
+          document.getElementById(`person-year-${video.year}`).scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+        jumpRow.appendChild(jumpBtn);
+
+        const headerLi = document.createElement('li');
+        headerLi.className = 'clip-year-header';
+        headerLi.id = `person-year-${video.year}`;
+        headerLi.textContent = video.year;
+        clipList.appendChild(headerLi);
+      }
+
       const li = document.createElement('li');
       const btnRow = document.createElement('button');
       btnRow.className = 'clip-row';
       btnRow.dataset.video = video.id;
       btnRow.dataset.time = clip.time;
-      btnRow.innerHTML = `<span class="clip-time">${video.year}</span><span>${clip.label}</span><span class="clip-meta">${formatTime(clip.time)}</span>`;
+      btnRow.innerHTML = `<span class="clip-time">${formatTime(clip.time)}</span><span>${clip.label}</span><span class="clip-meta">${video.title}</span>`;
       btnRow.addEventListener('click', () => playVideoAt(video, clip.time));
       li.appendChild(btnRow);
       clipList.appendChild(li);
@@ -362,6 +407,7 @@ function initTabs() {
         p.hidden = p.dataset.panel !== btn.dataset.tab;
       });
       document.getElementById('year-dial-wrap').hidden = btn.dataset.tab !== 'year';
+      document.getElementById('year-stepper').hidden = btn.dataset.tab !== 'year';
     });
   });
 }
@@ -408,5 +454,6 @@ function initCustomControls() {
 cacheEls();
 initTabs();
 initCustomControls();
+initYearStepper();
 renderYearPanel();
 renderPeoplePanel();

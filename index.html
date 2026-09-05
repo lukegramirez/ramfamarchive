@@ -16,8 +16,10 @@
   <div class="hero-inner">
     <h1>The Ramirez Family Archive</h1>
   </div>
-  <div class="reel-ticker" aria-hidden="true">
-    <span>SUPER&nbsp;8&nbsp;&mdash;&nbsp;VHS&nbsp;&mdash;&nbsp;DIGITIZED&nbsp;&mdash;&nbsp;1965&ndash;2009&nbsp;&mdash;&nbsp;SUPER&nbsp;8&nbsp;&mdash;&nbsp;VHS&nbsp;&mdash;&nbsp;DIGITIZED&nbsp;&mdash;&nbsp;1965&ndash;2009&nbsp;&mdash;&nbsp;SUPER&nbsp;8&nbsp;&mdash;&nbsp;VHS&nbsp;&mdash;&nbsp;DIGITIZED&nbsp;&mdash;&nbsp;1965&ndash;2009&nbsp;&mdash;&nbsp;SUPER&nbsp;8&nbsp;&mdash;&nbsp;VHS&nbsp;&mdash;&nbsp;DIGITIZED&nbsp;&mdash;&nbsp;1965&ndash;2009&nbsp;&mdash;</span>
+  <div class="year-stepper" id="year-stepper">
+    <button class="stepper-btn" id="year-prev" aria-label="Previous year">&#8249;</button>
+    <span class="stepper-year" id="year-stepper-label">&nbsp;</span>
+    <button class="stepper-btn" id="year-next" aria-label="Next year">&#8250;</button>
   </div>
   <div class="film-strip" aria-hidden="true"></div>
 </header>
@@ -74,6 +76,7 @@
 
   <section id="panel-people" class="panel" data-panel="people" hidden>
     <div class="people-list" id="people-list"></div>
+    <div class="year-jump-row" id="year-jump-row"></div>
     <ol id="person-clip-list" class="clip-list"></ol>
   </section>
   </main>
