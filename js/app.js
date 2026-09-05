@@ -360,6 +360,7 @@ function initTabs() {
       document.querySelectorAll('.panel').forEach(p => {
         p.hidden = p.dataset.panel !== btn.dataset.tab;
       });
+      document.getElementById('year-dial-wrap').hidden = btn.dataset.tab !== 'year';
     });
   });
 }

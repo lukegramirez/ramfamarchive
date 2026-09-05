@@ -35,7 +35,13 @@
   <button class="tab-btn" data-tab="people" role="tab" aria-selected="false">By Person</button>
 </nav>
 
-<main>
+<div class="page-body">
+  <aside class="year-dial-wrap" id="year-dial-wrap">
+    <div class="year-dial-marker" aria-hidden="true"></div>
+    <div class="year-dial" id="year-dial" tabindex="0"></div>
+  </aside>
+
+  <main>
   <section id="player-area" class="player-area">
     <div class="player-shell">
       <div class="player-wrap">
@@ -69,22 +75,15 @@
   </section>
 
   <section id="panel-year" class="panel" data-panel="year">
-    <div class="year-panel-layout">
-      <div class="year-dial-wrap">
-        <div class="year-dial-marker" aria-hidden="true"></div>
-        <div class="year-dial" id="year-dial" tabindex="0"></div>
-      </div>
-      <div class="year-content">
-        <div class="video-sublist" id="video-sublist"></div>
-      </div>
-    </div>
+    <div class="video-sublist" id="video-sublist"></div>
   </section>
 
   <section id="panel-people" class="panel" data-panel="people" hidden>
     <div class="people-list" id="people-list"></div>
     <ol id="person-clip-list" class="clip-list"></ol>
   </section>
-</main>
+  </main>
+</div>
 
 <footer>
   <p>Digitized and archived by Luke. Click any timestamp to jump straight there.</p>
