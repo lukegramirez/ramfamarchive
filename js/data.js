@@ -24,6 +24,18 @@
 
 const VIDEOS = [
   {
+    id: "1965-1966-reel",
+    year: 1965,
+    title: "1965 & Summer 1966 — Family Reel",
+    youtubeId: "xtvkrDEtREA",
+    clips: [
+      // Real digitized reel — only the opening is marked so far.
+      // Watch through it and add a clip entry for each moment worth
+      // jumping to, same as the other videos below.
+      { time: 0, label: "Start of reel — add real chapter markers here", people: [] }
+    ]
+  },
+  {
     id: "1988-tape3",                 // unique, no spaces — used internally
     year: 1988,
     title: "Summer 1988 — VHS Tape 3",
