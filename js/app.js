@@ -142,6 +142,7 @@ function playVideoAt(video, seconds) {
   updateMuteUI();
 
   document.getElementById('now-playing-title').textContent = `${video.year} — ${video.title}`;
+  document.getElementById('watermark-year').textContent = video.year;
   renderChapterList(video);
   document.getElementById('player-area').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
