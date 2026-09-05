@@ -180,51 +180,119 @@ function allPeople() {
   return Array.from(set).sort((a, b) => a.localeCompare(b));
 }
 
+let dialYears = [];
+let dialScrollDebounce = null;
+let lastSelectedYear = null;
+
+function buildDialYears() {
+  const groupMap = new Map(groupByYear().map(g => [g.year, g]));
+  const years = [];
+  for (let y = YEAR_RANGE.first; y <= YEAR_RANGE.last; y++) {
+    years.push({ year: y, group: groupMap.get(y) || null });
+  }
+  return years;
+}
+
 function renderYearPanel() {
-  const container = document.getElementById('year-list');
-  container.innerHTML = '';
-  const groups = groupByYear();
+  const dial = document.getElementById('year-dial');
+  dial.innerHTML = '';
+  dialYears = buildDialYears();
 
-  const yearBtns = document.createElement('div');
-  yearBtns.className = 'year-list';
-  const sublist = document.createElement('div');
-  sublist.className = 'video-sublist';
-
-  function selectYear(group, yearBtn) {
-    [...yearBtns.children].forEach(b => b.classList.remove('active'));
-    yearBtn.classList.add('active');
-    sublist.innerHTML = '';
-    group.videos.forEach(video => {
-      const vBtn = document.createElement('button');
-      vBtn.className = 'video-pick';
-      vBtn.textContent = video.title;
-      vBtn.addEventListener('click', () => {
-        [...sublist.children].forEach(b => b.classList.remove('active'));
-        vBtn.classList.add('active');
-        playVideoAt(video, video.clips[0] ? video.clips[0].time : 0);
-      });
-      sublist.appendChild(vBtn);
-    });
-    if (group.videos.length === 1) {
-      sublist.firstChild.click();
-    }
+  if (!dialYears.length) {
+    dial.parentElement.hidden = true;
+    document.getElementById('video-sublist').innerHTML = '<p class="empty-note">No videos yet — add one in js/data.js.</p>';
+    return;
   }
 
-  groups.forEach(group => {
+  dialYears.forEach(entry => {
     const btn = document.createElement('button');
-    btn.className = 'pick-btn';
-    btn.textContent = group.year;
-    btn.addEventListener('click', () => selectYear(group, btn));
-    yearBtns.appendChild(btn);
+    btn.className = 'year-dial-item' + (entry.group ? '' : ' empty-year');
+    btn.textContent = entry.year;
+    btn.dataset.year = entry.year;
+    btn.addEventListener('click', () => {
+      btn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+    dial.appendChild(btn);
   });
 
-  container.appendChild(yearBtns);
-  container.appendChild(sublist);
+  dial.addEventListener('scroll', onDialScroll);
+  window.addEventListener('resize', updateDialVisualState);
 
-  if (groups.length) {
-    yearBtns.firstChild.click();
-  } else {
-    container.innerHTML = '<p class="empty-note">No videos yet — add one in js/data.js.</p>';
+  // Land on the first year that actually has footage, or the very first
+  // year in the range if nothing has been added yet.
+  const initial = dialYears.find(e => e.group) || dialYears[0];
+  requestAnimationFrame(() => {
+    const btn = dial.querySelector(`[data-year="${initial.year}"]`);
+    if (btn) btn.scrollIntoView({ block: 'center' });
+    updateDialVisualState();
+    selectYear(initial.year);
+  });
+}
+
+function onDialScroll() {
+  updateDialVisualState();
+  clearTimeout(dialScrollDebounce);
+  dialScrollDebounce = setTimeout(() => {
+    const centered = getCenteredDialItem();
+    if (centered) selectYear(Number(centered.dataset.year));
+  }, 120);
+}
+
+function getCenteredDialItem() {
+  const dial = document.getElementById('year-dial');
+  const rect = dial.getBoundingClientRect();
+  const centerY = rect.top + rect.height / 2;
+  let closest = null;
+  let closestDist = Infinity;
+  dial.querySelectorAll('.year-dial-item').forEach(item => {
+    const r = item.getBoundingClientRect();
+    const dist = Math.abs((r.top + r.height / 2) - centerY);
+    if (dist < closestDist) { closestDist = dist; closest = item; }
+  });
+  return closest;
+}
+
+function updateDialVisualState() {
+  const dial = document.getElementById('year-dial');
+  const rect = dial.getBoundingClientRect();
+  const centerY = rect.top + rect.height / 2;
+  dial.querySelectorAll('.year-dial-item').forEach(item => {
+    const r = item.getBoundingClientRect();
+    const dist = Math.abs((r.top + r.height / 2) - centerY);
+    const norm = Math.min(1, dist / (rect.height / 2));
+    item.style.transform = `scale(${(1.15 - norm * 0.45).toFixed(3)})`;
+    item.style.opacity = (1 - norm * 0.75).toFixed(3);
+    item.classList.toggle('centered', dist < 18);
+  });
+}
+
+function selectYear(year) {
+  if (year === lastSelectedYear) return;
+  lastSelectedYear = year;
+
+  const entry = dialYears.find(e => e.year === year);
+  const container = document.getElementById('video-sublist');
+  container.innerHTML = '';
+
+  if (!entry || !entry.group) {
+    container.innerHTML = `<p class="empty-note">No footage from ${year} yet — add one in js/data.js.</p>`;
+    return;
+  }
+
+  entry.group.videos.forEach(video => {
+    const vBtn = document.createElement('button');
+    vBtn.className = 'video-pick';
+    vBtn.textContent = video.title;
+    vBtn.addEventListener('click', () => {
+      [...container.children].forEach(b => b.classList && b.classList.remove('active'));
+      vBtn.classList.add('active');
+      playVideoAt(video, video.clips[0] ? video.clips[0].time : 0);
+    });
+    container.appendChild(vBtn);
+  });
+
+  if (entry.group.videos.length === 1) {
+    container.firstChild.click();
   }
 }
 

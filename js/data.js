@@ -22,6 +22,12 @@
  * That's it — the site reads this file and builds everything else.
  */
 
+// The year dial (left side of the "By Year" tab) always shows every year
+// in this range, even ones with no footage yet, so it's ready to go the
+// moment you add a real video. Bump "last" forward as more years get
+// digitized.
+const YEAR_RANGE = { first: 1965, last: 2009 };
+
 const VIDEOS = [
   {
     id: "1965-1966-reel",
